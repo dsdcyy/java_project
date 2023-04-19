@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GroovyCompilerProjectConfiguration">
+    <option name="configScript" value="/media/Ljw/Data/apache-groovy-4.0.10/groovy-4.0.10/bin/grape" />
+  </component>
+</project>
