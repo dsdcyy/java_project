@@ -2,19 +2,22 @@ package com.ljw.config;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.ljw.pojo.RestBean;
+import com.ljw.service.AuthUserService;
+import jakarta.annotation.Resource;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 import java.io.IOException;
 
@@ -27,6 +30,9 @@ import java.io.IOException;
 @EnableWebSecurity
 @Slf4j
 public class SecurityConfig {
+    @Resource
+    AuthUserService authUserService;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
@@ -51,6 +57,33 @@ public class SecurityConfig {
 
     }
 
+    /**
+     * 用户名安全管理
+     *
+     * @param httpSecurity
+     * @return AuthenticationManager
+     * @throws Exception
+     */
+
+    @Bean
+    public AuthenticationManager authenticationManager(HttpSecurity httpSecurity) throws Exception {
+        return httpSecurity.getSharedObject(AuthenticationManagerBuilder.class)
+                .userDetailsService(authUserService)
+                .and()
+                .build();
+    }
+
+    /**
+     * 用户名密码加密类
+     *
+     * @return BCryptPasswordEncoder
+     */
+
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         response.setCharacterEncoding("utf-8");
         String username = request.getParameter("username");
@@ -71,5 +104,6 @@ public class SecurityConfig {
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
 
     }
+
 
 }

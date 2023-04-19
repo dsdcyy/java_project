@@ -26,7 +26,7 @@ public class RestBean<T> {
     }
 
     public static <T> RestBean<T> fail(Integer status, T data) {
-        return new RestBean<T>(status, true, data);
+        return new RestBean<T>(status, false, data);
     }
 
 
